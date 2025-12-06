@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Objetivos Semanales</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        h1 {
+            color: #667eea;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .stat-box {
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-box.positivos {
+            background: #d4edda;
+        }
+        
+        .stat-box.negativos {
+            background: #f8d7da;
+        }
+        
+        .stat-box.total {
+            background: #d1ecf1;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        
+        .bonus-semanal {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .guardado-info {
+            text-align: center;
+            font-size: 11px;
+            color: #666;
+            margin-top: 8px;
+            font-style: italic;
+        }
+        
+        .reset-btn {
+            width: 100%;
+            padding: 15px;
+            background: #e0e0e0;
+            border: none;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        .reset-btn:active {
+            background: #d0d0d0;
+        }
+        
+        .premios {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .premios h2 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+        
+        .premios-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .premio-item {
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .seccion {
+            background: white;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .seccion h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        
+        .objetivo-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+        
+        .objetivo-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .objetivo-nombre {
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .objetivo-total {
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        
+        .dias-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .dia-col {
+            text-align: center;
+        }
+        
+        .dia-letra {
+            font-size: 11px;
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 3px;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 8px 4px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 2px 0;
+        }
+        
+        .btn-plus {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-minus {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn:active {
+            opacity: 0.8;
+        }
+        
+        .valor-dia {
+            font-weight: bold;
+            padding: 5px 0;
+            font-size: 14px;
+        }
+        
+        .bonus-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff3cd;
+            padding: 8px;
+            border-radius: 5px;
+        }
+        
+        .btn-bonus {
+            padding: 5px 10px;
+            border: none;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 0 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container" id="app"></div>
+
+    <script>
+        const diasSemana = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+        
+        const objetivos = [
+            'HACER LA CAMA',
+            'HIGIENE PERSONAL',
+            'LEVANTARSE EN HORA',
+            'RECOGER COMIDA',
+            'TAREAS INSTITUTO',
+            'HORA ESTUDIO',
+            'TENER ORDEN CUARTO',
+            'RECOGER CENA',
+            'DEJAR COCINA LIMPIA',
+            'DORMIR ANTES 00:30'
+        ];
+        
+        const convivencia = [
+            'TONO AGRADABLE',
+            'EDUCACION',
+            'HABLAR SIN PALABROTAS',
+            'FUERZA DE HERMANOS',
+            'RESPETO',
+            'CARIÑO',
+            'AMOR'
+        ];
+        
+        let datos = {};
+        let bonusSemanal = 0;
+        let ultimoGuardado = null;
+        
+        // FUNCIONES DE GUARDADO
+        function guardarDatos() {
+            const dataToSave = {
+                datos: datos,
+                bonusSemanal: bonusSemanal,
+                fecha: new Date().toISOString()
+            };
+            try {
+                const jsonData = JSON.stringify(dataToSave);
+                document.cookie = `objetivosData=${encodeURIComponent(jsonData)}; path=/; max-age=31536000`;
+                ultimoGuardado = new Date();
+                console.log('✅ Datos guardados correctamente');
+            } catch (e) {
+                console.error('❌ Error al guardar:', e);
+            }
+        }
+        
+        function cargarDatos() {
+            try {
+                const cookies = document.cookie.split('; ');
+                const objetivosCookie = cookies.find(c => c.startsWith('objetivosData='));
+                
+                if (objetivosCookie) {
+                    const jsonData = decodeURIComponent(objetivosCookie.split('=')[1]);
+                    const savedData = JSON.parse(jsonData);
+                    datos = savedData.datos;
+                    bonusSemanal = savedData.bonusSemanal;
+                    ultimoGuardado = new Date(savedData.fecha);
+                    console.log('✅ Datos cargados correctamente');
+                    return true;
+                }
+            } catch (e) {
+                console.error('❌ Error al cargar:', e);
+            }
+            return false;
+        }
+        
+        function inicializar() {
+            // Intentar cargar datos guardados
+            const cargado = cargarDatos();
+            
+            // Si no hay datos guardados, inicializar en cero
+            if (!cargado) {
+                [...objetivos, ...convivencia].forEach(obj => {
+                    datos[obj] = {
+                        dias: [0, 0, 0, 0, 0, 0, 0],
+                        bonus: 0
+                    };
+                });
+                bonusSemanal = 0;
+            }
+            
+            render();
+        }
+        
+        function cambiarPunto(nombre, dia, tipo) {
+            const val = datos[nombre].dias[dia];
+            if (tipo === 'plus') {
+                datos[nombre].dias[dia] = val >= 4 ? 0 : val + 1;
+            } else {
+                datos[nombre].dias[dia] = val <= -4 ? 0 : val - 1;
+            }
+            guardarDatos();
+            render();
+        }
+        
+        function cambiarBonus(nombre, delta) {
+            datos[nombre].bonus += delta;
+            guardarDatos();
+            render();
+        }
+        
+        function cambiarBonusSemanal(delta) {
+            bonusSemanal = Math.max(0, bonusSemanal + delta);
+            guardarDatos();
+            render();
+        }
+        
+        function calcularTotal(nombre) {
+            return datos[nombre].dias.reduce((a, b) => a + b, 0) + datos[nombre].bonus;
+        }
+        
+        function calcularTotales() {
+            let positivos = bonusSemanal;
+            let negativos = 0;
+            
+            [...objetivos, ...convivencia].forEach(obj => {
+                const total = calcularTotal(obj);
+                if (total > 0) positivos += total;
+                if (total < 0) negativos += total;
+            });
+            
+            return { positivos, negativos, total: positivos + negativos };
+        }
+        
+        function resetear() {
+            if (confirm('¿Resetear toda la semana? Se borrarán todos los datos.')) {
+                bonusSemanal = 0;
+                [...objetivos, ...convivencia].forEach(obj => {
+                    datos[obj] = {
+                        dias: [0, 0, 0, 0, 0, 0, 0],
+                        bonus: 0
+                    };
+                });
+                guardarDatos();
+                render();
+            }
+        }
+        
+        function formatearFecha(fecha) {
+            if (!fecha) return '';
+            const ahora = new Date();
+            const diff = Math.floor((ahora - fecha) / 1000);
+            
+            if (diff < 60) return 'hace unos segundos';
+            if (diff < 3600) return `hace ${Math.floor(diff/60)} minutos`;
+            if (diff < 86400) return `hace ${Math.floor(diff/3600)} horas`;
+            return fecha.toLocaleDateString('es-ES');
+        }
+        
+        function renderObjetivo(nombre) {
+            const total = calcularTotal(nombre);
+            const color = total > 0 ? '#28a745' : total < 0 ? '#dc3545' : '#6c757d';
+            
+            return `
+                <div class="objetivo-card">
+                    <div class="objetivo-header">
+                        <span class="objetivo-nombre">${nombre}</span>
+                        <span class="objetivo-total" style="background:${color}; color:white">
+                            ${total > 0 ? '+' : ''}${total}
+                        </span>
+                    </div>
+                    <div class="dias-grid">
+                        ${diasSemana.map((dia, i) => `
+                            <div class="dia-col">
+                                <div class="dia-letra">${dia}</div>
+                                <button class="btn btn-plus" onclick="cambiarPunto('${nombre}', ${i}, 'plus')">+</button>
+                                <div class="valor-dia">${datos[nombre].dias[i]}</div>
+                                <button class="btn btn-minus" onclick="cambiarPunto('${nombre}', ${i}, 'minus')">−</button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div class="bonus-row">
+                        <span style="font-size:12px;font-weight:bold">Bonus: ${datos[nombre].bonus}</span>
+                        <div>
+                            <button class="btn-bonus" style="background:#dc3545;color:white" 
+                                onclick="cambiarBonus('${nombre}', -1)">-1</button>
+                            <button class="btn-bonus" style="background:#28a745;color:white" 
+                                onclick="cambiarBonus('${nombre}', 1)">+1</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function render() {
+            const totales = calcularTotales();
+            
+            document.getElementById('app').innerHTML = `
+                <div class="header">
+                    <h1>📊 Informe Semanal Objetivos</h1>
+                    
+                    <div class="stats">
+                        <div class="stat-box positivos">
+                            <div class="stat-label">Positivos</div>
+                            <div class="stat-value" style="color:#155724">+${totales.positivos}</div>
+                        </div>
+                        <div class="stat-box negativos">
+                            <div class="stat-label">Negativos</div>
+                            <div class="stat-value" style="color:#721c24">${totales.negativos}</div>
+                        </div>
+                        <div class="stat-box total">
+                            <div class="stat-label">Total</div>
+                            <div class="stat-value" style="color:#004085">${totales.total}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bonus-semanal">
+                        <span style="font-weight:bold">⭐ Bonus Semana Perfecta: +${bonusSemanal}</span>
+                        <div>
+                            <button class="btn-bonus" style="background:white;color:#ff9800" 
+                                onclick="cambiarBonusSemanal(-5)">-5</button>
+                            <button class="btn-bonus" style="background:white;color:#ff9800" 
+                                onclick="cambiarBonusSemanal(5)">+5</button>
+                        </div>
+                    </div>
+                    
+                    <button class="reset-btn" onclick="resetear()">🔄 Resetear Semana</button>
+                    
+                    ${ultimoGuardado ? `
+                        <div class="guardado-info">
+                            💾 Guardado automático: ${formatearFecha(ultimoGuardado)}
+                        </div>
+                    ` : ''}
+                </div>
+                
+                <div class="premios">
+                    <h2>🎁 Premios Disponibles</h2>
+                    <div class="premios-grid">
+                        <div class="premio-item" style="background:#e3f2fd">🎮 1h PlayStation</div>
+                        <div class="premio-item" style="background:#e8f5e9">📱 30min móvil</div>
+                        <div class="premio-item" style="background:#fff9c4">👥 1h extra amigos</div>
+                        <div class="premio-item" style="background:#f3e5f5">💰 Paga 10€</div>
+                    </div>
+                </div>
+                
+                <div class="seccion">
+                    <h2 style="color:#667eea">🎯 OBJETIVOS</h2>
+                    ${objetivos.map(obj => renderObjetivo(obj)).join('')}
+                </div>
+                
+                <div class="seccion">
+                    <h2 style="color:#e91e63">❤️ CONVIVENCIA</h2>
+                    ${convivencia.map(obj => renderObjetivo(obj)).join('')}
+                </div>
+            `;
+        }
+        
+        // Inicializar al cargar la página
+        inicializar();
+        
+        // Guardar periódicamente (backup cada 30 segundos)
+        setInterval(() => {
+            if (datos && Object.keys(datos).length > 0) {
+                guardarDatos();
+            }
+        }, 30000);
+    </script>
+</body>
+</html>
